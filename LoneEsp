@@ -6,7 +6,9 @@ local function createLabel(text, color)
     local label = Drawing.new("Text")
     label.Text = text
     label.Color = color
-    label.Size = 14
+    label.Size = 16
+    label.Outline = true
+    label.Center = true
     label.Visible = false
     return label
 end
@@ -21,11 +23,11 @@ local function collectObjects()
     if resources then
         for _, obj in pairs(resources:GetChildren()) do
             if obj.Name == "Iron Ore" then
-                table.insert(labels, {obj=obj, key="iron", labelText="Iron Ore", label=createLabel("Iron Ore", Color3.fromRGB(255,165,0))})
+                table.insert(labels, {obj=obj, key="iron", labelText="Iron Ore", label=createLabel("Iron Ore", Color3.fromRGB(255,140,0))})
             elseif obj.Name == "Stone Ore" or obj.Name == "Stone Ore Sand" then
-                table.insert(labels, {obj=obj, key="stone", labelText=obj.Name, label=createLabel(obj.Name, Color3.fromRGB(180,180,180))})
+                table.insert(labels, {obj=obj, key="stone", labelText=obj.Name, label=createLabel(obj.Name, Color3.fromRGB(0,220,255))})
             elseif obj.Name == "Brimstone Ore" then
-                table.insert(labels, {obj=obj, key="brimstone", labelText="Brimstone", label=createLabel("Brimstone", Color3.fromRGB(255,80,80))})
+                table.insert(labels, {obj=obj, key="brimstone", labelText="Brimstone", label=createLabel("Brimstone", Color3.fromRGB(255,0,60))})
             end
         end
     end
@@ -34,21 +36,52 @@ local function collectObjects()
     if clothPlants then
         for _, obj in pairs(clothPlants:GetChildren()) do
             if obj.Name == "ClothPlant" then
-                table.insert(labels, {obj=obj, key="cloth", labelText="Cloth Plant", label=createLabel("Cloth Plant", Color3.fromRGB(100,220,100))})
+                table.insert(labels, {obj=obj, key="cloth", labelText="Cloth Plant", label=createLabel("Cloth Plant", Color3.fromRGB(0,255,100))})
             end
         end
     end
 
-    notify("ESP yüklendi: " .. #labels .. " obje", "Matcha", 3)
+    local dropped = workspace:FindFirstChild("Dropped")
+    if dropped then
+        for _, obj in pairs(dropped:GetChildren()) do
+            if obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart") then
+                table.insert(labels, {obj=obj, key="loot", labelText=obj.Name, label=createLabel(obj.Name, Color3.fromRGB(255,255,0))})
+            end
+        end
+    end
+
+    local droppedPacks = workspace:FindFirstChild("DroppedPacks")
+    if droppedPacks then
+        for _, obj in pairs(droppedPacks:GetChildren()) do
+            if obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart") then
+                table.insert(labels, {obj=obj, key="pack", labelText=obj.Name, label=createLabel(obj.Name, Color3.fromRGB(255,165,0))})
+            end
+        end
+    end
+
+    local offlinePlayers = workspace:FindFirstChild("OfflinePlayers")
+    if offlinePlayers then
+        for _, obj in pairs(offlinePlayers:GetChildren()) do
+            if obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart") then
+                table.insert(labels, {obj=obj, key="sleeper", labelText="Sleeper", label=createLabel("Sleeper", Color3.fromRGB(255,0,255))})
+            end
+        end
+    end
+
+    notify("ESP loaded: " .. #labels .. " objects", "Matcha", 3)
 end
 
 -- UI Tab
 UI.AddTab("Lone", function(tab)
-    local sec = tab:Section("ESP (Activating all ESPs at once could cause a crash!)", "Left", nil, 300)
+    local sec = tab:Section("ESP (Activating all ESPs at once could cause a crash!)", "Left", nil, 400)
     sec:Toggle("iron_esp", "Iron Ore ESP", false)
     sec:Toggle("stone_esp", "Stone Ore ESP", false)
     sec:Toggle("brimstone_esp", "Brimstone Ore ESP", false)
     sec:Toggle("cloth_esp", "Cloth Plant ESP", false)
+    sec:Spacing()
+    sec:Toggle("loot_esp", "Dropped Loot ESP", false)
+    sec:Toggle("pack_esp", "Dropped Bag/Crate ESP", false)
+    sec:Toggle("sleeper_esp", "Sleeper (Offline) ESP", false)
     sec:Spacing()
     sec:SliderInt("esp_max_dist", "Max Distance", 50, 1000, 300)
 end)
@@ -94,13 +127,13 @@ task.spawn(function()
     end
 end)
 
--- R = yenile
+-- R = refresh
 UIS.InputBegan:Connect(function(input, gpe)
     if gpe then return end
     if input.KeyCode == Enum.KeyCode.R then
         collectObjects()
-        notify("ESP yenilendi!", "Matcha", 2)
+        notify("ESP refreshed!", "Matcha", 2)
     end
 end)
 
-notify("ESP Hazir! R=Yenile", "Matcha", 5)
+notify("ESP Ready! R=Refresh", "Matcha", 5)
