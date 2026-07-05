@@ -1,8 +1,3 @@
---[[
-    Resource ESP - Dandy's World Style (Matcha LuaVM)
-    Fixed: Cleanup, Loot/Pack/Sleeper, Better toggles
-]]
-
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
